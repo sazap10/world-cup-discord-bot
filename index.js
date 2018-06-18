@@ -119,7 +119,7 @@ async function groups() {
 client.on('message', message => {
   if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-  const args = message.content.slice(prefix.length + 1).split(' ');
+  const args = message.content.slice(prefix.length + 1).split(/ +/);
   const command = args.shift().toLowerCase();
   if (command === 'today') {
     (async function () {
@@ -133,8 +133,8 @@ client.on('message', message => {
     })();
   } else if (command === 'current') {
     (async function () {
-      currentMatches = await currentMatches();
-      message.channel.send(currentMatches);
+      matchesCurrentlyPlayed = await currentMatches();
+      message.channel.send(matchesCurrentlyPlayed);
     })();
   } else if (command === 'groups') {
     (async function () {
@@ -142,6 +142,15 @@ client.on('message', message => {
       groupsOutput.forEach(groupMessage => {
         message.channel.send(groupMessage);
       })
+    })();
+  } else if (command === 'country') {
+    (async function () {
+      countryOrCode = args.shift().toLowerCase()
+      if (countryOrCode == null) {
+        
+      }
+      countryOutput = await countrySchedule(countryOrCode);
+      message.channel.send(countryOutput);
     })();
   }
 
