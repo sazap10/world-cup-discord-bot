@@ -87,6 +87,10 @@ async function currentMatches() {
   }
 }
 
+async function countrySchedule(countryOrCode) {
+  return "WIP"
+}
+
 async function groups() {
   try {
     messages = []
@@ -147,10 +151,11 @@ client.on('message', message => {
     (async function () {
       countryOrCode = args.shift().toLowerCase()
       if (countryOrCode == null) {
-        
+        message.channel.send("Please enter a country name or FIFA code(3 letter)");
+      } else {
+        countryOutput = await countrySchedule(countryOrCode);
+        message.channel.send(countryOutput);
       }
-      countryOutput = await countrySchedule(countryOrCode);
-      message.channel.send(countryOutput);
     })();
   }
 
