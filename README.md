@@ -11,3 +11,5 @@ Prefix each command with "!world-cup"
 3. current
 4. groups
 
+### today
+This replies with today's schedule of matches with 
