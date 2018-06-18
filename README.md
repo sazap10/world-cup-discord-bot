@@ -4,6 +4,7 @@ A discord bot for displaying information about the FIFA World Cup 2018.  This us
 
 ## How to use
 
+Visit [https://discordapp.com/oauth2/authorize?client_id=457630413687619595&scope=bot&permissions=0](https://discordapp.com/oauth2/authorize?client_id=457630413687619595&scope=bot&permissions=0) to add the bot to your server.
 
 ## Available commands
 
