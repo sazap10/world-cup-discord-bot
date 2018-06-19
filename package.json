@@ -1,13 +1,13 @@
 {
-    "name": "worldcupdiscord",
+    "name": "world-cup-discord-bot",
     "version": "1.0.0",
-    "description": "",
+    "description": "Discord bot to display schedule, match information and standings.",
     "main": "index.js",
     "scripts": {
         "start": "node index.js"
     },
     "author": "Sachin Pande",
-    "license": "ISC",
+    "license": "MIT",
     "dependencies": {
         "ascii-table": "0.0.9",
         "bugsnag": "^2.4.2",
@@ -15,5 +15,9 @@
         "got": "^8.3.1",
         "lodash": "^4.17.10",
         "moment": "^2.22.2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:sazap10/world-cup-discord-bot.git"
     }
 }

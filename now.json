@@ -1,5 +1,6 @@
 {
   "name": "world-cup-discord-bot",
+  "alias": "world-cup-discord-bot",
   "env": {
     "DISCORD_TOKEN": "@discord_token"
   },

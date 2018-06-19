@@ -130,3 +130,29 @@ This displays the current standings of the groups.
 ```
 
 ## Run your own bot
+Before you can run your own bot you will need to create an app in discord:
+1. Head to [Discord Developers](https://discordapp.com/developers/applications/me) and login when prompted.
+2. Click "New App" and fill in the form to create your bot application.
+3. Click "Create a Bot User" when the application has been created.
+4. Scroll down to the "Bot" section of that page, click the "click to reveal" link next to "Token" in order to view your token.
+
+You will need this token to be passed into the application, which can be done by setting the `DISCORD_TOKEN` environment variable.
+
+### Locally
+1. Clone the repo
+2. `npm install`
+3. `DISCORD_TOKEN=YOUR-TOKEN-HERE npm start`
+
+### Now
+You can deploy using [Now](https://zeit.co/now). You will need to create an account using an email which you should get prompted to do so when first deploying.
+
+Make sure to setup the `discord_token` secret by using `now secret add discord_token YOUR-TOKEN-HERE`.
+
+Then run `now` to deploy. Or if you wish to manually set everything run 
+`now --public -e DISCORD_TOKEN=@discord_token --npm --name world-cup-discord-bot`
+
+### Docker
+1. Clone the repo
+2. Build a docker images `docker build -t world-cup-discord-bot .`
+3. Run using docker run or docker-compose:
+`docker run --name world-cup-discord-bot -e DISCORD_TOKEN=YOUR-TOKEN-HERE -d world-cup-discord-bot`
