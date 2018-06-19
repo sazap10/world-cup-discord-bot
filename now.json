@@ -1,0 +1,8 @@
+{
+  "name": "world-cup-discord-bot",
+  "env": {
+    "DISCORD_TOKEN": "@discord_token"
+  },
+  "type": "npm",
+  "public": true
+}
