@@ -7,7 +7,7 @@ cache:
 before_deploy: npm install now --no-save
 deploy:
   - provider: script
-    script: now --token $NOW_TOKEN && now alias --token $NOW_TOKEN && now --token $NOW_TOKEN rm world-cup-discord-bot --safe --yes
+    script: now --token $NOW_TOKEN --regions bru && now alias --token $NOW_TOKEN && now --token $NOW_TOKEN rm world-cup-discord-bot --safe --yes
     skip_cleanup: true
     on:
       master: true
