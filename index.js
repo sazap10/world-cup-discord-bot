@@ -219,7 +219,6 @@ client.on('message', message => {
       }
     })();
   } else if (command === 'live') {
-    (async function () {
       let thisChannel = liveStatChannelIds.find(channelId => { return channelId == message.channel.id });
 
       if (thisChannel) {
@@ -231,7 +230,6 @@ client.on('message', message => {
       }
       console.log("Live update channel update...")
       console.log(JSON.stringify(liveStatChannelIds, null, 2))
-    })();
   }
 });
 
