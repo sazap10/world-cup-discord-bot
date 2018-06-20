@@ -10,32 +10,37 @@ const cron = require('cron');
 let liveStatChannelIds = [];
 let liveMatchStats = [];
 var cronJob = cron.job("0 */1 * * * *", async function () {
-  console.info('Poll for goll..');
-  const response = await got('http://worldcup.sfg.io/matches/current', {
-    json: true
-  })
-  let message = ""
-  const responseMatches = response.body
-  responseMatches.forEach(newMatchStats => {
-    let matchId = newMatchStats.home_team.code + newMatchStats.away_team.code
-    let oldMatchStats = liveMatchStats.find(liveMatch => { return liveMatch.id == matchId })
-    if (oldMatchStats) {
-      // Check if score has changed to update feed
-      if (oldMatchStats.homeGoals != newMatchStats.home_team.goals || oldMatchStats.awayGoals == newMatchStats.away_team.goals) {
-        oldMatchStats.homeGoals = newMatchStats.home_team.goals
-        oldMatchStats.awayGoals = newMatchStats.away_team.goals
-        message += `Score Update: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
-      }
-    } else {
-      liveMatchStats.push({ id: matchId, homeGoals: newMatchStats.home_team.goals, awayGoals: newMatchStats.away_team.goals })
-      message += `Match Started: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
-    }
-  });
-
-  if (message.length > 0) {
-    liveStatChannelIds.forEach(channelId => {
-      client.channels.get(channelId).send(message.substr(0,1000) + "...");
+  try {
+    console.info('Poll for goll..');
+    const response = await got('http://worldcup.sfg.io/matches/current', {
+      json: true
     })
+    let message = ""
+    const responseMatches = response.body
+    responseMatches.forEach(newMatchStats => {
+      let matchId = newMatchStats.home_team.code + newMatchStats.away_team.code
+      let oldMatchStats = liveMatchStats.find(liveMatch => { return liveMatch.id == matchId })
+      if (oldMatchStats) {
+        // Check if score has changed to update feed
+        if (oldMatchStats.homeGoals != newMatchStats.home_team.goals || oldMatchStats.awayGoals == newMatchStats.away_team.goals) {
+          oldMatchStats.homeGoals = newMatchStats.home_team.goals
+          oldMatchStats.awayGoals = newMatchStats.away_team.goals
+          message += `Score Update: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
+        }
+      } else {
+        liveMatchStats.push({ id: matchId, homeGoals: newMatchStats.home_team.goals, awayGoals: newMatchStats.away_team.goals })
+        message += `Match Started: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
+      }
+    });
+
+    if (message.length > 0) {
+      liveStatChannelIds.forEach(channelId => {
+        client.channels.get(channelId).send(message.substr(0, 1000) + "...");
+      })
+    }
+  } catch (error) {
+    bugsnag.notify(error)
+    return ""
   }
 });
 
