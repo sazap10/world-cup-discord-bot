@@ -12,20 +12,38 @@ bugsnag.register('798eae4f2af02969a3415e42d361600c')
 const token = process.env.DISCORD_TOKEN
 const prefix = process.env.DISCORD_BOT_PREFIX || "!world-cup"
 
+let cache = {
+  "matches": null,
+  "today": null,
+  "tomorrow": null,
+  "groupResults": null,
+  "current": null
+}
+
 async function dateMatches(date, title) {
   try {
     let url = "http://worldcup.sfg.io/matches"
+    let cacheIndex = "matches"
     if (date === "today") {
       url = "http://worldcup.sfg.io/matches/today"
+      cacheIndex = "today"
     } else if (date === "tomorrow") {
       url = "http://worldcup.sfg.io/matches/tomorrow"
+      cacheIndex = "tomorrow"
     }
-    const response = await got(url, {
-      json: true
-    })
+    let responseMatches = null
+    if (!cache[cacheIndex] || cache[cacheIndex].lastUpdated.diff(moment(), 'minutes') > 1){
+      const response = await got(url, {
+        json: true
+      })
+      responseMatches = response.body
+      cache[cacheIndex] = { data: responseMatches, lastUpdated: moment()}
+    } else {
+      console.log("Using cache")
+      responseMatches = cache[cacheIndex].data
+    }
 
     let message = `Matches ${title}:\n`
-    let responseMatches = response.body
     if (responseMatches.length === 0) {
       message = `No matches on ${title}\n`
     } else {
@@ -69,10 +87,18 @@ function generateDateMatchesMessage(matches) {
 async function currentMatches() {
   try {
     message = ""
-    const response = await got('http://worldcup.sfg.io/matches/current', {
-      json: true
-    })
-    const responseMatches = response.body
+    let responseMatches = null
+    if (!cache["current"] || cache["current"].lastUpdated.diff(moment(), 'minutes') > 1){
+      const response = await got('http://worldcup.sfg.io/matches/current', {
+        json: true
+      })
+      responseMatches = response.body
+      cache["current"] = { data:responseMatches, lastUpdated: moment()}
+    } else {
+      console.log("Using cache")
+      responseMatches = cache["current"].data
+    }
+    
     responseMatches.forEach(match => {
       message += `${match.time === "half-time" ? "HT" : match.time} ${match.home_team.country} ${match.home_team.goals} - ${match.away_team.goals} ${match.away_team.country}\n`
     });
@@ -94,10 +120,19 @@ async function countrySchedule(countryOrCode) {
 async function groups() {
   try {
     messages = []
-    const response = await got('http://worldcup.sfg.io/teams/group_results', {
-      json: true
-    })
-    const responseBody = response.body
+
+    let responseBody = null
+    if (!cache["groupResults"] || cache["groupResults"].lastUpdated.diff(moment(), 'minutes') > 1){
+      const response = await got('http://worldcup.sfg.io/teams/group_results', {
+        json: true
+      })
+      responseBody = response.body
+      cache["groupResults"] = { data:responseBody, lastUpdated: moment()}
+    } else {
+      console.log("Using cache")
+      responseBody = cache["groupResults"].data
+    }
+
     responseBody.forEach(item => {
       const group = item.group.teams.map(g => [
         g.team.country,
