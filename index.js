@@ -224,10 +224,10 @@ client.on('message', message => {
 
       if (thisChannel) {
         liveStatChannelIds.splice(liveStatChannelIds.indexOf(liveStatChannelIds.find(channelId => { return channelId == thisChannel.id })))
-        message.channel.send("Live updated disabled.");
+        message.channel.send("Live updates disabled.");
       } else {
         liveStatChannelIds.push(message.channel.id);
-        message.channel.send("Live updated enabled!");
+        message.channel.send("Live updates enabled!");
       }
       console.log("Live update channel update...")
       console.log(JSON.stringify(liveStatChannelIds, null, 2))
