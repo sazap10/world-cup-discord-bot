@@ -22,7 +22,7 @@ var cronJob = cron.job("0 */1 * * * *", async function () {
       let oldMatchStats = liveMatchStats.find(liveMatch => { return liveMatch.id == matchId })
       if (oldMatchStats) {
         // Check if score has changed to update feed
-        if (oldMatchStats.homeGoals != newMatchStats.home_team.goals || oldMatchStats.awayGoals == newMatchStats.away_team.goals) {
+        if (oldMatchStats.homeGoals !== newMatchStats.home_team.goals || oldMatchStats.awayGoals !== newMatchStats.away_team.goals) {
           oldMatchStats.homeGoals = newMatchStats.home_team.goals
           oldMatchStats.awayGoals = newMatchStats.away_team.goals
           message += `Score Update: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
@@ -233,9 +233,7 @@ client.on('message', message => {
       console.log(JSON.stringify(liveStatChannelIds, null, 2))
     })();
   }
-
 });
-
 
 client.login(token);
 cronJob.start();
