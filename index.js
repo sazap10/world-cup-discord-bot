@@ -146,7 +146,7 @@ async function groups() {
         rows: group
       }
       var table = new Table().fromJSON(json)
-      messages.push(table.toString())
+      messages.push("```" + table.toString() + "```")
     })
     return messages
   } catch (error) {
