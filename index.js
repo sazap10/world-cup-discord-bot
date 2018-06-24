@@ -32,7 +32,7 @@ async function dateMatches(date, title) {
       cacheIndex = "tomorrow"
     }
     let responseMatches = null
-    if (!cache[cacheIndex] || cache[cacheIndex].lastUpdated.diff(moment(), 'minutes') > 1){
+    if (!cache[cacheIndex] || moment().diff(cache[cacheIndex].lastUpdated, 'minutes') >= 1){
       const response = await got(url, {
         json: true
       })
@@ -88,7 +88,7 @@ async function currentMatches() {
   try {
     message = ""
     let responseMatches = null
-    if (!cache["current"] || cache["current"].lastUpdated.diff(moment(), 'minutes') > 1){
+    if (!cache["current"] || moment().diff(cache["current"].lastUpdated, 'minutes') >= 1){
       const response = await got('http://worldcup.sfg.io/matches/current', {
         json: true
       })
@@ -122,7 +122,7 @@ async function groups() {
     messages = []
 
     let responseBody = null
-    if (!cache["groupResults"] || cache["groupResults"].lastUpdated.diff(moment(), 'minutes') > 1){
+    if (!cache["groupResults"] || moment().diff(cache["groupResults"].lastUpdated, 'minutes') >= 1){
       const response = await got('http://worldcup.sfg.io/teams/group_results', {
         json: true
       })
@@ -217,7 +217,7 @@ client.on('message', message => {
 
 });
 
-client.login(token);
+// client.login(token);
 
 const http = require('http');
 const requestListener = function (req, res) {
@@ -227,3 +227,19 @@ const requestListener = function (req, res) {
 
 var server = http.createServer(requestListener);
 server.listen(8080);
+
+function sleep(ms = 0) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+
+(async function () {
+  matchesCurrentlyPlayed = await currentMatches();
+  console.log(matchesCurrentlyPlayed);
+  todayMatches = await dateMatches("today", "today");
+  console.log(todayMatches);
+  groupsOutput = await groups();
+  groupsOutput.forEach(groupMessage => {
+    console.log(groupMessage);
+  })
+})();
