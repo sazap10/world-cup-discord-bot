@@ -217,7 +217,7 @@ client.on('message', message => {
 
 });
 
-// client.login(token);
+client.login(token);
 
 const http = require('http');
 const requestListener = function (req, res) {
@@ -227,19 +227,3 @@ const requestListener = function (req, res) {
 
 var server = http.createServer(requestListener);
 server.listen(8080);
-
-function sleep(ms = 0) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-
-(async function () {
-  matchesCurrentlyPlayed = await currentMatches();
-  console.log(matchesCurrentlyPlayed);
-  todayMatches = await dateMatches("today", "today");
-  console.log(todayMatches);
-  groupsOutput = await groups();
-  groupsOutput.forEach(groupMessage => {
-    console.log(groupMessage);
-  })
-})();
