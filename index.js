@@ -4,6 +4,46 @@ const moment = require("moment")
 const bugsnag = require('bugsnag')
 const Discord = require('discord.js')
 const Table = require("ascii-table")
+const cron = require('cron');
+
+// Live Updates Cron Job
+let liveStatChannelIds = [];
+let liveMatchStats = [];
+var cronJob = cron.job("0 */1 * * * *", async function () {
+  try {
+    console.info('Poll for goll..');
+    const response = await got('http://worldcup.sfg.io/matches/current', {
+      json: true
+    })
+    let message = ""
+    const responseMatches = response.body
+    responseMatches.forEach(newMatchStats => {
+      let matchId = newMatchStats.home_team.code + newMatchStats.away_team.code
+      let oldMatchStats = liveMatchStats.find(liveMatch => { return liveMatch.id == matchId })
+      if (oldMatchStats) {
+        // Check if score has changed to update feed
+        if (oldMatchStats.homeGoals !== newMatchStats.home_team.goals || oldMatchStats.awayGoals !== newMatchStats.away_team.goals) {
+          oldMatchStats.homeGoals = newMatchStats.home_team.goals
+          oldMatchStats.awayGoals = newMatchStats.away_team.goals
+          message += `Score Update: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
+        }
+      } else {
+        liveMatchStats.push({ id: matchId, homeGoals: newMatchStats.home_team.goals, awayGoals: newMatchStats.away_team.goals })
+        message += `Match Started: ${newMatchStats.time === "half-time" ? "HT" : newMatchStats.time} ${newMatchStats.home_team.country} ${newMatchStats.home_team.goals} - ${newMatchStats.away_team.goals} ${newMatchStats.away_team.country}\n`
+      }
+    });
+
+    if (message.length > 0) {
+      liveStatChannelIds.forEach(channelId => {
+        client.channels.get(channelId).send(message.substr(0, 1000) + "...");
+      })
+    }
+  } catch (error) {
+    bugsnag.notify(error)
+    return ""
+  }
+});
+
 
 const client = new Discord.Client()
 
@@ -157,7 +197,7 @@ async function groups() {
 
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
-  console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
+  console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
   // Example of changing the bot's playing game to something useful. `client.user` is what the
   // docs refer to as the "ClientUser".
   client.user.setActivity(`Serving ${client.guilds.size} servers`);
@@ -213,11 +253,23 @@ client.on('message', message => {
         message.channel.send(countryOutput);
       }
     })();
-  }
+  } else if (command === 'live') {
+      let thisChannel = liveStatChannelIds.find(channelId => { return channelId == message.channel.id });
 
+      if (thisChannel) {
+        liveStatChannelIds.splice(liveStatChannelIds.indexOf(liveStatChannelIds.find(channelId => { return channelId == thisChannel.id })))
+        message.channel.send("Live updates disabled.");
+      } else {
+        liveStatChannelIds.push(message.channel.id);
+        message.channel.send("Live updates enabled!");
+      }
+      console.log("Live update channel update...")
+      console.log(JSON.stringify(liveStatChannelIds, null, 2))
+  }
 });
 
 client.login(token);
+cronJob.start();
 
 const http = require('http');
 const requestListener = function (req, res) {
