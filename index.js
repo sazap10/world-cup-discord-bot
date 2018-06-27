@@ -98,7 +98,7 @@ async function currentMatches() {
       console.log("Using cache")
       responseMatches = cache["current"].data
     }
-    
+
     responseMatches.forEach(match => {
       message += `${match.time === "half-time" ? "HT" : match.time} ${match.home_team.country} ${match.home_team.goals} - ${match.away_team.goals} ${match.away_team.country}\n`
     });
@@ -134,15 +134,21 @@ async function groups() {
     }
 
     responseBody.forEach(item => {
-      const group = item.group.teams.map(g => [
-        g.team.country,
-        g.team.points,
-        g.team.goal_differential
+      const group = item.ordered_teams.map(t => [
+        t.country,
+        t.games_played,
+        t.wins,
+        t.draws,
+        t.losses,
+        t.goals_for,
+        t.goals_against,
+        t.goal_differential,
+        t.points,
       ])
 
       const json = {
-        title: `Group ${item.group.letter}`,
-        heading: ["Team", "Points", "Goal Difference"],
+        title: `Group ${item.letter}`,
+        heading: ["Team", "GP", "W", "D", "L", "GF", "GA", "GD", "Points"],
         rows: group
       }
       var table = new Table().fromJSON(json)
