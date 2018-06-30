@@ -161,6 +161,11 @@ async function groups() {
   }
 }
 
+function errorHandler(err){
+  console.log(err)
+  bugsnag.notify(err)
+}
+
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
@@ -190,40 +195,40 @@ client.on('message', message => {
   if (command === 'today') {
     (async function () {
       todayMatches = await dateMatches("today", "today");
-      message.channel.send(todayMatches);
+      message.channel.send(todayMatches).catch(errorHandler);
     })();
   } else if (command === 'tomorrow') {
     (async function () {
       matchesTomorrow = await dateMatches("tomorrow", "tomorrow");
-      message.channel.send(matchesTomorrow);
+      message.channel.send(matchesTomorrow).catch(errorHandler);
     })();
   } else if (command === 'current') {
     (async function () {
       matchesCurrentlyPlayed = await currentMatches();
-      message.channel.send(matchesCurrentlyPlayed);
+      message.channel.send(matchesCurrentlyPlayed).catch(errorHandler);
     })();
   } else if (command === 'groups') {
     (async function () {
       groupsOutput = await groups();
       groupsOutput.forEach(groupMessage => {
-        message.channel.send(groupMessage);
+        message.channel.send(groupMessage).catch(errorHandler);
       })
     })();
   } else if (command === 'country') {
     (async function () {
       countryOrCode = args.shift().toLowerCase()
       if (countryOrCode == null) {
-        message.channel.send("Please enter a country name or FIFA code(3 letter)");
+        message.channel.send("Please enter a country name or FIFA code(3 letter)").catch(errorHandler);
       } else {
         countryOutput = await countrySchedule(countryOrCode);
-        message.channel.send(countryOutput);
+        message.channel.send(countryOutput).catch(errorHandler);
       }
     })();
   }
 
 });
 
-client.login(token);
+client.login(token).catch(errorHandler);
 
 const http = require('http');
 const requestListener = function (req, res) {
