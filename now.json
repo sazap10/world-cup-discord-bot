@@ -4,6 +4,5 @@
   "env": {
     "DISCORD_TOKEN": "@discord_token"
   },
-  "type": "npm",
   "public": true
 }

@@ -1,0 +1,19 @@
+name: Build and deploy
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Deploy
+      run: |
+        ARGS=""
+        REF=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+        [ "$REF" == "master" ] && ARGS="--prod"
+        now $ARGS --no-clipboard --token ${{ secrets.NOW_TOKEN }}
